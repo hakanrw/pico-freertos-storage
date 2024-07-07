@@ -160,5 +160,7 @@ int main() {
     xTaskCreate(rw_task, "RW_Task", RW_TASK_STACK_SIZE, NULL, 1, NULL);
     xTaskCreate(main_task, "Main_Task", MAIN_TASK_STACK_SIZE, NULL, 1, NULL);
 
+    vTaskStartScheduler(); // block thread and pass control to FreeRTOS
+
     return 0;
 }
