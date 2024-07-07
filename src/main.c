@@ -159,4 +159,6 @@ int main() {
 
     xTaskCreate(rw_task, "RW_Task", RW_TASK_STACK_SIZE, NULL, 1, NULL);
     xTaskCreate(main_task, "Main_Task", MAIN_TASK_STACK_SIZE, NULL, 1, NULL);
+
+    return 0;
 }
