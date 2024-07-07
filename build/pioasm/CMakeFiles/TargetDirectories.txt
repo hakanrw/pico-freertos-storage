@@ -1,3 +1,0 @@
-/home/hakan/Desktop/pi/pico-freertos/build/pioasm/CMakeFiles/pioasm.dir
-/home/hakan/Desktop/pi/pico-freertos/build/pioasm/CMakeFiles/edit_cache.dir
-/home/hakan/Desktop/pi/pico-freertos/build/pioasm/CMakeFiles/rebuild_cache.dir
