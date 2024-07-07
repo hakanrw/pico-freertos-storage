@@ -74,5 +74,5 @@ const struct lfs_config PICO_FLASH_CFG = {
     .block_cycles = 16, // ?
 
     .cache_size = FLASH_PAGE_SIZE, // 256
-    .lookahead_size = FLASH_PAGE_SIZE,   // 256    
+    .lookahead_size = FLASH_PAGE_SIZE,   // 256
 };
