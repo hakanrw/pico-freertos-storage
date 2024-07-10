@@ -18,13 +18,14 @@ project(freertos)
 
 add_subdirectory(lib/pico-usb-flash-drive)
 
-add_executable(freertos src/main.c)
+add_executable(freertos src/main.c src/hooks.c)
 
 target_include_directories(freertos PUBLIC .)
 
 target_link_libraries(freertos
   picofs
   pico_stdlib
+  pico_cyw43_arch_none
   FreeRTOS-Kernel-Heap4
   tinyusb_additions
   tinyusb_board
@@ -33,5 +34,11 @@ target_link_libraries(freertos
   hardware_sync
 )
 
+target_compile_definitions(freertos PRIVATE
+        PICO_STDIO_STACK_BUFFER_SIZE=64 # use a small printf on stack buffer
+)
+
 pico_enable_stdio_usb(freertos 1)
+pico_enable_stdio_uart(freertos 0)
+
 pico_add_extra_outputs(freertos)

@@ -18,21 +18,20 @@
  * system.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <bsp/board.h>
-#include <pico/stdlib.h>
-#include <tusb.h>
-#include <ff.h>
+#include "bsp/board.h"
+#include "pico/stdlib.h"
+#include "tusb.h"
+#include "ff.h"
+#include "pico/cyw43_arch.h"
 
-#include <FreeRTOS.h>
-#include <task.h>
+#include "FreeRTOS.h"
+#include "task.h"
 
 #include "bootsel_button.h"
 #include "flash.h"
 
 #define RW_TASK_STACK_SIZE 4096 // flash_fat_write requires 4096 bytes
-#define MAIN_TASK_STACK_SIZE 256
+#define MAIN_TASK_STACK_SIZE 1024
 
 static FATFS filesystem;
 
@@ -111,7 +110,8 @@ static void read_write_task(void) {
     static int count = 0;
     static uint64_t long_push = 0;
 
-    bool button = bb_get_bootsel_button();
+    bool button = false; // bb_get_bootsel_button();
+
     if (last_status != button && button) {  // Push BOOTSEL button
         task_read_file_content(&count);
     } else if (last_status != button && !button) { // Release BOOTSEL button
@@ -142,7 +142,16 @@ void rw_task(void* pvParameters) {
 }
 
 void main_task(void* pvParameters) {
+    if (cyw43_arch_init()) {
+        printf("Wi-Fi init failed\n");
+        return;
+    }
+
     while (true) {
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
         printf("hello from FreeRTOS!\n");
         vTaskDelay(100 / portTICK_PERIOD_MS);
     }
@@ -155,6 +164,7 @@ int main() {
     tud_init(BOARD_TUD_RHPORT);
     stdio_init_all();
 
+    flash_fat_initialize();
     test_and_init_filesystem();
 
     xTaskCreate(rw_task, "RW_Task", RW_TASK_STACK_SIZE, NULL, 1, NULL);
