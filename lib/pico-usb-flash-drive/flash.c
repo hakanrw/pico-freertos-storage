@@ -96,7 +96,28 @@ bool flash_fat_read(int block, uint8_t *buffer) {
     return true;
 }
 
+typedef struct {
+    int block;
+    uint8_t *buffer;
+} flash_arg_t;
+
+void _flash_fat_write(flash_arg_t* args);
+
+int once = 0;
+
 bool flash_fat_write(int block, uint8_t *buffer) {
+    flash_arg_t args = { .block = block, .buffer = buffer };
+
+    int res = flash_safe_execute(( void* )_flash_fat_write, &args, 1000);
+//    if (res == PICO_ERROR_NOT_PERMITTED) { while (1) {} }
+
+    return res;
+}
+
+void _flash_fat_write(flash_arg_t* args) {
+    int block = args->block;
+    uint8_t* buffer = args->buffer;
+
     /*
      * NOTE: Flash memory must be erased and updated in blocks of 4096 bytes
      *       from the head, and updating at the halfway boundary will (probably)
@@ -112,12 +133,10 @@ bool flash_fat_write(int block, uint8_t *buffer) {
     memcpy(data + flash_sector_fat_offset, buffer, FAT_BLOCK_SIZE);
 
     // Clear and update flash sectors.
-    stdio_set_driver_enabled(&stdio_usb, false);
-    uint32_t ints = save_and_disable_interrupts();
+//    stdio_set_driver_enabled(&stdio_usb, false);
+//    uint32_t ints = save_and_disable_interrupts();
     flash_range_erase(FLASH_FAT_OFFSET + flash_sector * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_FAT_OFFSET + flash_sector * FLASH_SECTOR_SIZE, data, FLASH_SECTOR_SIZE);
-    restore_interrupts(ints);
-    stdio_set_driver_enabled(&stdio_usb, true);
-
-    return true;
+//    restore_interrupts(ints);
+//    stdio_set_driver_enabled(&stdio_usb, true);
 }

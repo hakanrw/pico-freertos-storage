@@ -27,7 +27,11 @@ target_include_directories(picofs
 target_link_libraries(picofs
   PRIVATE
   pico_stdlib
+  pico_flash
+  tinyusb_device
+  hardware_flash
+  hardware_exception
 )
 
-pico_enable_stdio_usb(picofs 1)
+#pico_enable_stdio_usb(picofs 1)
 #pico_add_extra_outputs(picofs)

@@ -6,9 +6,9 @@
 #include <hardware/flash.h>
 #include <hardware/sync.h>
 #include <pico/stdlib.h>
+#include <pico/flash.h>
 #include <stdio.h>
 #include <string.h>
-
 
 #define FLASH_FAT_BLOCK_SIZE   4096
 #define FLASH_FAT_OFFSET       0x1F0000

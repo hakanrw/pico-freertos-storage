@@ -30,7 +30,7 @@
 #include "bootsel_button.h"
 #include "flash.h"
 
-#define RW_TASK_STACK_SIZE 4096 // flash_fat_write requires 4096 bytes
+#define RW_TASK_STACK_SIZE 16384 // flash_fat_write requires 4096 bytes
 #define MAIN_TASK_STACK_SIZE 1024
 
 static FATFS filesystem;
@@ -149,11 +149,11 @@ void main_task(void* pvParameters) {
 
     while (true) {
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
 
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
-        printf("hello from FreeRTOS!\n");
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+        printf("Hello LED!\n");
     }
 
     vTaskDelete( NULL );
@@ -164,7 +164,6 @@ int main() {
     tud_init(BOARD_TUD_RHPORT);
     stdio_init_all();
 
-    flash_fat_initialize();
     test_and_init_filesystem();
 
     xTaskCreate(rw_task, "RW_Task", RW_TASK_STACK_SIZE, NULL, 1, NULL);
